@@ -301,3 +301,13 @@ License
 ---------------
 
 WuKongIM is licensed under the [Apache License 2.0](./LICENSE).
+
+
+服务	端口	状态	访问地址
+HTTP API	5001	✅ 运行中	http://localhost:5001
+TCP长连接	5100	✅ 运行中	tcp://localhost:5100
+WebSocket	5200	✅ 运行中	ws://localhost:5200
+WSS安全连接	5210	✅ 运行中	wss://localhost:5210
+管理后台	5300	✅ 运行中	http://localhost:5300/web
+Demo演示	5172	✅ 运行中	http://localhost:5172
+集群通信	11110	✅ 运行中	tcp://localhost:11110

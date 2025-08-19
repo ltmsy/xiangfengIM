@@ -17,8 +17,16 @@ demo:
   on: true  
 conversation:
   on: true   
-# webhook: # webhook配置 用于接收消息通知事件，详情请查看文档
-  # httpAddr: "http://127.0.0.1:8080/webhooks/wukongim"  
+webhook: # webhook配置 用于接收消息通知事件，详情请查看文档
+  grpcAddr: "localhost:6979"  # 唐僧叨叨的GRPC地址
+  # httpAddr: "http://127.0.0.1:8080/webhooks/wukongim"  # HTTP webhook地址（与grpcAddr二选一）
+  msgNotifyEventPushInterval: 500ms  # 消息通知事件推送间隔，默认500毫秒
+  msgNotifyEventCountPerPush: 100    # 每次推送消息数量限制，默认100条
+  msgNotifyEventRetryMaxCount: 5     # 推送失败最大重试次数，默认5次
+  focusEvents:  # 关注的事件类型，如果为空表示关注所有事件
+    - "msg.offline"      # 离线消息事件
+    - "msg.notify"       # 消息通知事件  
+    - "user.onlinestatus" # 用户在线状态变化事件  
 cluster:
   nodeId: 1 # 节点ID
   addr: "tcp://127.0.0.1:10001"

@@ -32,6 +32,7 @@ type MessageResp struct {
 	FromUID     string `json:"from_uid"`        // 发送者UID
 	ChannelID   string `json:"channel_id"`      // 频道ID
 	ChannelType uint8  `json:"channel_type"`    // 频道类型
+	TargetUID   string `json:"target_uid"`      // 目标用户/群组ID（私聊时为对方用户ID，群聊时为群组ID）
 	Topic       string `json:"topic,omitempty"` // 话题ID
 	Expire      uint32 `json:"expire"`          // 消息过期时间
 	Timestamp   int32  `json:"timestamp"`       // 服务器消息时间戳(10位，到秒)
@@ -74,6 +75,29 @@ func (m *MessageResp) From(messageD wkdb.Message, systemUid string) {
 	}
 	m.ChannelID = realChannelID
 	m.ChannelType = messageD.ChannelType
+
+	// 设置 target_uid 字段
+	// 私聊场景：channel_type = 1 时，返回 target_uid = 对方用户ID
+	// 群聊场景：channel_type = 2 时，返回 target_uid = 群组ID
+	if messageD.ChannelType == wkproto.ChannelTypePerson {
+		// 个人私聊，target_uid 为对方用户ID
+		if strings.Contains(messageD.ChannelID, "@") {
+			channelIDs := strings.Split(messageD.ChannelID, "@")
+			for _, channelID := range channelIDs {
+				if fromUid != channelID {
+					m.TargetUID = channelID
+					break
+				}
+			}
+		} else {
+			// 如果没有@分隔符，直接使用channelID作为对方用户ID
+			m.TargetUID = messageD.ChannelID
+		}
+	} else {
+		// 群聊或其他类型，target_uid 为频道ID（群组ID）
+		m.TargetUID = messageD.ChannelID
+	}
+
 	m.Topic = messageD.Topic
 	m.Payload = messageD.Payload
 }
